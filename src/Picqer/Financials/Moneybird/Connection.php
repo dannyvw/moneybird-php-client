@@ -246,6 +246,34 @@ class Connection
     }
 
     /**
+     * @param string $method
+     * @param string $url
+     * @param array $options
+     */
+    public function request($method, $url, $options)
+    {
+        $headers = [];
+
+        // If access token is not set or token has expired, acquire new token
+        if (empty($this->accessToken)) {
+            $this->acquireAccessToken();
+        }
+
+        // If we have a token, sign the request
+        if (!empty($this->accessToken)) {
+            $headers['Authorization'] = 'Bearer ' . $this->accessToken;
+        }
+
+        $options['headers'] = $headers;
+
+        try {
+            $this->client()->request($method, $this->formatUrl($url, 'post'), $options);
+        } catch (Exception $e) {
+            $this->parseExceptionForErrorMessages($e);
+        }
+    }
+
+    /**
      * @return string
      */
     private function getAuthUrl()
@@ -482,6 +510,5 @@ class Connection
     {
         $this->scopes = $scopes;
     }
-
 }
 

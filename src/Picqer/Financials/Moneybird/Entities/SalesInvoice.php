@@ -116,7 +116,7 @@ class SalesInvoice extends Model {
                 'delivery_method' => $deliveryMethod
             ]
         ]));
-	    
+
 	return $this;
     }
 
@@ -153,7 +153,7 @@ class SalesInvoice extends Model {
         $this->connection()->patch($this->endpoint . '/' . $this->id . '/register_payment',
             $salesInvoicePayment->jsonWithNamespace()
         );
-	    
+
 	return $this;
     }
 
@@ -169,7 +169,7 @@ class SalesInvoice extends Model {
         $this->connection()->post($this->endpoint . '/' . $this->id . '/notes',
             $note->jsonWithNamespace()
         );
-	    
+
 	return $this;
     }
 
@@ -186,4 +186,19 @@ class SalesInvoice extends Model {
 
 		return $this->makeFromResponse($response);
 	}
+
+    /**
+     * @param string $file
+     */
+    public function addAttachment($file)
+    {
+        $this->connection()->request('post', $this->endpoint . '/' . $this->id . '/attachments', [
+            'multipart' => [
+                [
+                    'name' => 'file',
+                    'contents' => fopen($file, 'r'),
+                ],
+            ]
+        ]);
+    }
 }
